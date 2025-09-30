@@ -76,10 +76,15 @@ class HangmanGamePage extends StatefulWidget {
 class _HangmanGamePageState extends State<HangmanGamePage> {
   // --- VARIABLES DE ESTADO ---
   String _currentWord = "";
-  List<String> _guessedLetters = [];
+  final List<String> _guessedLetters = [];
   final int _maxMisses = 6;
   int _currentMisses = 0;
+  int get _currentHits {
+  return _guessedLetters.where((letter) => _currentWord.contains(letter)).length;
+}
   bool _gameFinished = false;
+int _totalAttempts = 0;
+
 
   // Alfabeto completo para construir el teclado
   final List<String> _alphabet = List.generate(26, (index) => String.fromCharCode('A'.codeUnitAt(0) + index));
@@ -98,6 +103,7 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
       _guessedLetters.clear();
       _currentMisses = 0;
       _gameFinished = false;
+      _totalAttempts++;
     });
   }
 
@@ -261,7 +267,7 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
               Text(
                 isWinner
                     ? '¡Adivinaste la palabra correctamente!'
-                    : 'Perdiste. La palabra era: "${_currentWord}"',
+                    : 'Perdiste. La palabra era: "$_currentWord"',
                 style: TextStyle(
                   color: isWinner ? AppColor.correctColor : AppColor.accentColor,
                   fontWeight: FontWeight.bold,
@@ -269,7 +275,7 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Text('Total de Fallos: $_currentMisses de $_maxMisses'),
+              Text('Total de Fallos: $_currentMisses de $_maxMisses |   Total de Aciertos: $_currentHits',),
             ],
           ),
           actions: <Widget>[
@@ -312,15 +318,26 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
             child: _buildHangmanImage(),
           ),
 
-          // 2. Información de fallos
+          // 2. Información de fallos y Aciertos
           Text(
-            'Fallos: $_currentMisses / $_maxMisses',
+            'Fallos: $_currentMisses / $_maxMisses,  |   Aciertos: $_currentHits',
             style: const TextStyle(
               fontSize: 18,
               color: AppColor.lightColor,
               fontWeight: FontWeight.w300,
             ),
           ),
+
+          Text(
+            'Intentos: $_totalAttempts',
+             style: const TextStyle(
+             fontSize: 18,
+             color: AppColor.lightColor,
+             fontWeight: FontWeight.w300,
+  ),
+), 
+
+
 
           const Divider(color: AppColor.lightColor, indent: 30, endIndent: 30),
 
@@ -334,6 +351,16 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
 
           // Espacio final para asegurar que el teclado no esté pegado al borde
           const SizedBox(height: 10),
+
+          // 5. Informacion de intentos
+          Text(
+           'Intentos: $_totalAttempts',
+            style: const TextStyle(
+            fontSize: 18,
+            color: AppColor.lightColor,
+            fontWeight: FontWeight.w300,
+  ),
+),
         ],
       ),
     );
