@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-// ----------------------------------------------------
-// 1. CLASES DE UTILIDAD Y CONSTANTES
-// ----------------------------------------------------
+//
+// CLASES
+//
 
-// Definición de la paleta de colores para una interfaz limpia
+
 class AppColor {
   static const Color primaryColor = Color(0xFF2C3E50); // Azul oscuro/Pizarra
   static const Color accentColor = Color(0xFFE74C3C); // Rojo para errores
@@ -14,32 +14,29 @@ class AppColor {
   static const Color disabledColor = Color(0xFF95A5A6); // Gris para botones usados
 }
 
-// Utilidades del juego (palabras y rutas de imágenes)
+// Utilidades del juego
 class GameUtils {
-  // Lista predefinida de palabras en mayúsculas
+  // Lista de palabras
   static final List<String> wordList = [
     "FLUTTER", "WIDGET", "MOBILE", "DART", "COLUMNA", "ESTADO", "APLICACION", "PROGRAMACION", "INTERFAZ", "SOFTWARE"
   ];
 
-  // Función para obtener la ruta de la imagen del ahorcado según el número de fallos
-  // NOTA: Asegúrate de tener estas imágenes configuradas en tu 'pubspec.yaml'
-  // y nombradas de 0.png a 6.png dentro de 'assets/hangman/'
+
   static String getHangmanImage(int count) {
-    // Si el usuario no ha configurado las imágenes, usamos un placeholder.
-    // En un proyecto real, se debe configurar: assets: - assets/hangman/
+
     return 'assets/hangman/$count.png';
   }
 
-  // Genera un número aleatorio para seleccionar una palabra
+  // esto de aqui me genera un número aleatorio para seleccionar una palabra de las que puse en la lista
   static String selectRandomWord() {
     final random = Random();
     return wordList[random.nextInt(wordList.length)];
   }
 }
 
-// ----------------------------------------------------
-// 2. MAIN Y WIDGET PRINCIPAL
-// ----------------------------------------------------
+
+// los main y widgets
+
 
 void main() {
   runApp(const HangmanApp());
@@ -51,7 +48,7 @@ class HangmanApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'El Ahorcado',
+      title: 'juego el Ahorcado ',
       theme: ThemeData(
         fontFamily: 'Inter',
         colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primaryColor),
@@ -62,9 +59,9 @@ class HangmanApp extends StatelessWidget {
   }
 }
 
-// ----------------------------------------------------
-// 3. PÁGINA DE JUEGO (STATEFUL WIDGET)
-// ----------------------------------------------------
+
+//el stateful
+
 
 class HangmanGamePage extends StatefulWidget {
   const HangmanGamePage({super.key});
@@ -86,7 +83,7 @@ class _HangmanGamePageState extends State<HangmanGamePage> {
 int _totalAttempts = 0;
 
 
-  // Alfabeto completo para construir el teclado
+  // Alfabeto
   final List<String> _alphabet = List.generate(26, (index) => String.fromCharCode('A'.codeUnitAt(0) + index));
 
   @override
@@ -95,7 +92,7 @@ int _totalAttempts = 0;
     _selectNewWord();
   }
 
-  // --- LÓGICA DEL JUEGO ---
+  // la logica
 
   void _selectNewWord() {
     setState(() {
@@ -108,7 +105,7 @@ int _totalAttempts = 0;
   }
 
   void _checkLetter(String letter) {
-    // Si el juego ha terminado o la letra ya fue adivinada, ignorar
+
     if (_gameFinished || _guessedLetters.contains(letter)) {
       return;
     }
@@ -116,12 +113,12 @@ int _totalAttempts = 0;
     setState(() {
       _guessedLetters.add(letter);
 
-      // 1. Revisar si la letra es un fallo
+
       if (!_currentWord.contains(letter)) {
         _currentMisses++;
       }
 
-      // 2. Revisar si el juego ha terminado (ganar o perder)
+
       if (_currentMisses >= _maxMisses) {
         _gameFinished = true;
         _showGameResult(false); // Perdió
@@ -133,11 +130,11 @@ int _totalAttempts = 0;
   }
 
   bool _isWordGuessed() {
-    // Verifica si cada letra de la palabra está en la lista de letras adivinadas
+
     return _currentWord.split('').every((char) => _guessedLetters.contains(char));
   }
 
-  // --- WIDGETS DE INTERFAZ (UI) ---
+
 
   // Muestra la imagen del ahorcado (parte superior de la columna)
   Widget _buildHangmanImage() {
@@ -146,7 +143,6 @@ int _totalAttempts = 0;
       GameUtils.getHangmanImage(_currentMisses),
       height: 250,
       fit: BoxFit.contain,
-      // Manejo de error si la imagen no se carga (ej. no está en pubspec.yaml)
       errorBuilder: (context, error, stackTrace) => Container(
           height: 250, width: 250,
           decoration: BoxDecoration(
@@ -160,17 +156,14 @@ int _totalAttempts = 0;
     );
   }
 
-  // Muestra la palabra oculta/adivinada (usando Row)
   Widget _buildWordDisplay() {
     return Row(
-      // Organiza los elementos horizontalmente (Requisito: Row)
       mainAxisAlignment: MainAxisAlignment.center,
       children: _currentWord.split('').map((letter) {
         bool isGuessed = _guessedLetters.contains(letter);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           child: Text(
-            // Mostrar la letra si fue adivinada, sino mostrar '_'
             isGuessed || _gameFinished ? letter : '_',
             style: TextStyle(
               fontSize: 38,
@@ -183,9 +176,9 @@ int _totalAttempts = 0;
     );
   }
 
-  // Crea el teclado (usando Column y Rows anidadas)
+  // Crea el teclado con COLUMN YA QUE ES UN REQUISITO
   Widget _buildKeyboard() {
-    // Dividimos el alfabeto en 3 filas para un mejor diseño en móviles
+
     final List<List<String>> rows = [
       _alphabet.sublist(0, 9),
       _alphabet.sublist(9, 18),
@@ -193,12 +186,11 @@ int _totalAttempts = 0;
     ];
 
     return Column(
-      // Organiza las filas verticalmente (Requisito: Column)
+
       children: rows.map((row) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
-            // Organiza los botones horizontalmente (Requisito: Row)
             mainAxisAlignment: MainAxisAlignment.center,
             children: row.map((letter) => _buildLetterButton(letter)).toList(),
           ),
@@ -207,11 +199,10 @@ int _totalAttempts = 0;
     );
   }
 
-  // Crea un botón de letra individual
   Widget _buildLetterButton(String letter) {
     final bool alreadyGuessed = _guessedLetters.contains(letter);
 
-    // Determinar el color del botón
+
     Color buttonColor = AppColor.lightColor;
     Color textColor = AppColor.primaryColor;
 
@@ -227,7 +218,7 @@ int _totalAttempts = 0;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
       child: ElevatedButton(
-        // Deshabilitar el botón si la letra ya fue usada o el juego terminó
+
         onPressed: alreadyGuessed || _gameFinished ? null : () => _checkLetter(letter),
         style: ElevatedButton.styleFrom(
           backgroundColor: alreadyGuessed ? buttonColor : AppColor.lightColor,
@@ -252,14 +243,14 @@ int _totalAttempts = 0;
     );
   }
 
-  // Muestra el diálogo de resultado
+
   void _showGameResult(bool isWinner) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(isWinner ? '¡Felicidades, Ganaste!' : '¡Juego Terminado!'),
+          title: Text(isWinner ? '¡Felicidades Ganaste!' : '¡Juego Terminado!'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +258,7 @@ int _totalAttempts = 0;
               Text(
                 isWinner
                     ? '¡Adivinaste la palabra correctamente!'
-                    : 'Perdiste. La palabra era: "$_currentWord"',
+                    : 'Perdiste La palabra era: "$_currentWord"',
                 style: TextStyle(
                   color: isWinner ? AppColor.correctColor : AppColor.accentColor,
                   fontWeight: FontWeight.bold,
@@ -292,7 +283,7 @@ int _totalAttempts = 0;
     );
   }
 
-  // --- ESTRUCTURA PRINCIPAL DE LA PÁGINA ---
+  // estrutucra
 
   @override
   Widget build(BuildContext context) {
@@ -308,17 +299,17 @@ int _totalAttempts = 0;
         backgroundColor: AppColor.primaryColor,
       ),
       body: Column(
-        // Organiza el contenido verticalmente (Requisito: Column)
+
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1. Imagen del Ahorcado (Muñeco)
+
           Center(
-            // La lógica de la imagen está en _buildHangmanImage
+
             child: _buildHangmanImage(),
           ),
 
-          // 2. Información de fallos y Aciertos
+
           Text(
             'Fallos: $_currentMisses / $_maxMisses,  |   Aciertos: $_currentHits',
             style: const TextStyle(
@@ -341,18 +332,14 @@ int _totalAttempts = 0;
 
           const Divider(color: AppColor.lightColor, indent: 30, endIndent: 30),
 
-          // 3. Palabra a adivinar (usando Row)
           _buildWordDisplay(),
 
           const Divider(color: AppColor.lightColor, indent: 30, endIndent: 30),
 
-          // 4. Teclado de letras (usando Column y Rows)
           _buildKeyboard(),
 
-          // Espacio final para asegurar que el teclado no esté pegado al borde
           const SizedBox(height: 10),
 
-          // 5. Informacion de intentos
           Text(
            'Intentos: $_totalAttempts',
             style: const TextStyle(
